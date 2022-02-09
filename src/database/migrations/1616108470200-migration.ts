@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner, QueryRunnerAlreadyReleasedError } from 'typeorm';
 
 export class migration1616108470200 implements MigrationInterface {
   name = 'migration1616108470200';
@@ -12,6 +12,12 @@ export class migration1616108470200 implements MigrationInterface {
     );
     await queryRunner.query(
       'CREATE TABLE "users_games_games" ("usersId" uuid NOT NULL, "gamesId" uuid NOT NULL, CONSTRAINT "PK_cd4067d574477fd5c7693bc7872" PRIMARY KEY ("usersId", "gamesId"))',
+    );
+    await queryRunner.query(
+      'CREATE TABLE "genres" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "gamesId" uuid NOT NULL, "genre" character varying NOT NULL DEFAULT "nenhum", PRIMARY KEY ("id", "gamesId"))'
+    );
+    await queryRunner.query(
+      'CREATE TABLE "orders" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "userId" uuid NOT NULL, "gamesId" uuid NOT NULL, PRIMARY KEY ("id", "userId", "gamesId"))'
     );
     await queryRunner.query(
       'CREATE INDEX "IDX_e5263d029d8644de829aae5c35" ON "users_games_games" ("usersId") ',
@@ -36,6 +42,7 @@ export class migration1616108470200 implements MigrationInterface {
     );
     await queryRunner.query('DROP INDEX "IDX_934b0d8f9d0084c97d3876ad32"');
     await queryRunner.query('DROP INDEX "IDX_e5263d029d8644de829aae5c35"');
+    await queryRunner.query('DROP TABLE "genres"');
     await queryRunner.query('DROP TABLE "users_games_games"');
     await queryRunner.query('DROP TABLE "games"');
     await queryRunner.query('DROP TABLE "users"');
